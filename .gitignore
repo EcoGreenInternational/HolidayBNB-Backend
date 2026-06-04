@@ -1,0 +1,7 @@
+node_modules/
+.env
+logs/
+src/uploads/avatars/*
+src/uploads/hotels/*
+!src/uploads/avatars/.gitkeep
+!src/uploads/hotels/.gitkeep
