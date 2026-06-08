@@ -7,7 +7,7 @@ const devFormat = printf(({ level, message, timestamp, stack }) => {
   return `${timestamp} [${level}]: ${stack || message}`;
 });
 
-// ── Prod format: JSON lines (easy to parse by log tools) ─────────────────────
+
 const prodFormat = printf(({ level, message, timestamp, stack, ...meta }) => {
   return JSON.stringify({ timestamp, level, message: stack || message, ...meta });
 });
