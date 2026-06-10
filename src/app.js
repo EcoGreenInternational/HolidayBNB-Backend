@@ -12,6 +12,7 @@ import propertyRoutes from './routes/propertyRoutes.js';
 import adminUserRoutes from './routes/adminUserRoutes.js';
 import adminPropertyRoutes from './routes/adminPropertyRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import reviewRoutes from './routes/reviewRoutes.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 import logger from './utils/logger.js';
 
@@ -68,6 +69,7 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth',  authLimiter, authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/properties',  propertyRoutes);
+app.use('/api/reviews', reviewRoutes);
 app.use('/api/admin/users', adminUserRoutes);
 app.use('/api/admin/properties', adminPropertyRoutes);
 app.use('/api/admin/upload', uploadRoutes);

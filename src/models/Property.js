@@ -5,7 +5,7 @@ const { Schema, model } = mongoose;
 const PropertySchema = new Schema(
   {
     name:            { type: String, required: true, trim: true },
-    propertyType:    { type: String, enum: ['Villa','Bungalow','Apartment','Resort','Guest House','Boutique Villa','Beach House','Tree House','Heritage Bungalow','Penthouse','Studio','House','Condo'], default: 'Villa' },
+    propertyType:    { type: String, enum: ['Villa','Bungalow','Apartment','Resort','Guest House','Boutique Villa','Beach House','Tree House','Heritage Bungalow','Home Stay','Penthouse','Studio','House','Condo'], default: 'Villa' },
     roomType:        { type: String, enum: ['Private Room','Shared Room','Entire Place','Studio','Suite'], default: 'Entire Place' },
     status:          { type: String, enum: ['Active','Inactive','Pending'], default: 'Active' },
     description:     { type: String, trim: true, default: '' },
@@ -41,7 +41,7 @@ const PropertySchema = new Schema(
     availability:    { type: String, trim: true, default: '' },
     instantBooking:  { type: Boolean, default: false },
 
-    images:          { type: [String], default: [] },
+    images:          { type: [Schema.Types.Mixed], default: [] },
 
     owner: {
       type: Schema.Types.ObjectId,
