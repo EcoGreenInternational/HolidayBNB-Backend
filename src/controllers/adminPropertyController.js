@@ -60,7 +60,7 @@ export const createProperty = async (req, res) => {
   try {
     const ALLOWED = [
       'name','propertyType','roomType','status','description',
-      'maxAdults','maxChildren','maxInfants',
+      'maxAdults','maxChildren',
       'country','city','address','mapLink','landmarks',
       'bedrooms','beds','bathrooms','floorArea','minNights','maxNights',
       'amenities','accessibility','nearby','rules','experience','uniqueExperiences','safety',
@@ -104,7 +104,7 @@ export const updateProperty = async (req, res) => {
 
     const ALLOWED = [
       'name','propertyType','roomType','status','description',
-      'maxAdults','maxChildren','maxInfants',
+      'maxAdults','maxChildren',
       'country','city','address','mapLink','landmarks',
       'bedrooms','beds','bathrooms','floorArea','minNights','maxNights',
       'amenities','accessibility','nearby','rules','experience','uniqueExperiences','safety',

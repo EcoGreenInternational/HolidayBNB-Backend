@@ -11,7 +11,6 @@ const PropertySchema = new Schema(
     description:     { type: String, trim: true, default: '' },
     maxAdults:       { type: Number, default: 1 },
     maxChildren:     { type: Number, default: 0 },
-    maxInfants:      { type: Number, default: 0 },
 
     country:         { type: String, trim: true, default: '' },
     city:            { type: String, trim: true, default: '' },

@@ -11,8 +11,12 @@ import userRoutes from './routes/userRoutes.js';
 import propertyRoutes from './routes/propertyRoutes.js';
 import adminUserRoutes from './routes/adminUserRoutes.js';
 import adminPropertyRoutes from './routes/adminPropertyRoutes.js';
+import adminDashboardRoutes from './routes/adminDashboardRoutes.js';
+import adminBookingRoutes from './routes/adminBookingRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
+import bookingRoutes from './routes/bookingRoutes.js';
+import { stripeWebhook } from './controllers/bookingController.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 import logger from './utils/logger.js';
 
@@ -28,6 +32,8 @@ app.use(cors({
   credentials: true,
   methods:     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 }));
+
+app.post('/api/bookings/webhook', express.raw({ type: 'application/json' }), stripeWebhook);
 
 app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: false }));
@@ -71,7 +77,10 @@ app.use('/api/properties',  propertyRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/admin/users', adminUserRoutes);
 app.use('/api/admin/properties', adminPropertyRoutes);
+app.use('/api/admin/dashboard', adminDashboardRoutes);
+app.use('/api/admin/bookings', adminBookingRoutes);
 app.use('/api/admin/upload', uploadRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

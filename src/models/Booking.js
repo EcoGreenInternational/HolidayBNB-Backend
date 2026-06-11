@@ -11,7 +11,6 @@ const BookingSchema = new Schema(
     guests: {
       adults:   { type: Number, default: 1 },
       children: { type: Number, default: 0 },
-      infants:  { type: Number, default: 0 },
     },
     totalAmount:     { type: Number, required: true },
     serviceFee:      { type: Number, default: 0 },
