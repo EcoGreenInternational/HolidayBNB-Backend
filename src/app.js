@@ -24,13 +24,13 @@ const app = express();
 app.use(helmet());
 
 app.use(cors({
-  origin:      process.env.CLIENT_URL || 'http://localhost:5173',
+  origin:      process.env.CLIENT_URL,
   credentials: true,
   methods:     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 }));
 
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 if (process.env.NODE_ENV !== 'test') {
@@ -61,7 +61,6 @@ app.get('/api/health', (req, res) => {
   res.json({
     success: true,
     message: 'HollyBnB API is running',
-    env:     process.env.NODE_ENV,
     time:    new Date().toISOString(),
   });
 });

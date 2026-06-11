@@ -14,5 +14,6 @@ const ReviewSchema = new Schema(
 );
 
 ReviewSchema.index({ property: 1, createdAt: -1 });
+ReviewSchema.index({ property: 1, user: 1, createdAt: -1 });
 
 export default model('Review', ReviewSchema);

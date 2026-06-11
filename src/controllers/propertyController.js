@@ -1,11 +1,12 @@
 import Property from '../models/Property.js';
+import { sendSuccess, sendCreated, sendError, sendBadRequest } from '../utils/apiResponse.js';
 
 export const getProperties = async (req, res) => {
   try {
     const properties = await Property.find();
-    res.status(200).json(properties);
+    return res.status(200).json(properties);
   } catch (error) {
-    res.status(500).json({ message: 'Server Error fetching properties', error: error.message });
+    return sendError(res, 'Failed to fetch properties');
   }
 };
 
@@ -14,11 +15,11 @@ export const getPropertyById = async (req, res) => {
   try {
     const property = await Property.findById(req.params.id);
     if (!property) {
-      return res.status(404).json({ message: 'Property not found' });
+      return sendError(res, 'Property not found', 404);
     }
-    res.status(200).json(property);
+    return res.status(200).json(property);
   } catch (error) {
-    res.status(500).json({ message: 'Server Error fetching property', error: error.message });
+    return sendError(res, 'Failed to fetch property');
   }
 };
 
@@ -27,11 +28,11 @@ export const seedProperties = async (req, res) => {
     await Property.deleteMany();
     const sampleProperties = req.body.properties;
     if (!sampleProperties || !Array.isArray(sampleProperties)) {
-      return res.status(400).json({ message: 'Please provide an array of properties to seed' });
+      return sendBadRequest(res, 'Please provide an array of properties to seed');
     }
     const createdProperties = await Property.insertMany(sampleProperties);
-    res.status(201).json({ message: 'Properties seeded successfully', count: createdProperties.length });
+    return sendCreated(res, { count: createdProperties.length }, 'Properties seeded successfully');
   } catch (error) {
-    res.status(500).json({ message: 'Server Error seeding properties', error: error.message });
+    return sendError(res, 'Failed to seed properties');
   }
 };
