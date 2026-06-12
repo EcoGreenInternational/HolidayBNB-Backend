@@ -5,3 +5,5 @@ src/uploads/avatars/*
 src/uploads/hotels/*
 !src/uploads/avatars/.gitkeep
 !src/uploads/hotels/.gitkeep
+src/invoices/*
+!src/invoices/.gitkeep
