@@ -24,7 +24,7 @@ export const getUserStats = async (req, res) => {
       stats: {
         total,
         administrators: admins,
-        hostsAndEditors,
+        staffAndHosts,
         activeUsers: active,
       },
     });

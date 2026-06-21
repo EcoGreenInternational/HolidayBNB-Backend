@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import User from '../models/User.js';
 import {
   issueTokenPair,
@@ -14,7 +15,7 @@ import {
   sendConflict,
 } from '../utils/apiResponse.js';
 import logger from '../utils/logger.js';
-import { sendOTP } from '../utils/mailer.js';
+import { sendOTP, sendPasswordResetEmail } from '../utils/mailer.js';
 
 
 export const register = async (req, res) => {
@@ -30,10 +31,11 @@ export const register = async (req, res) => {
 
     const user = await User.create({ name, username, email, password });
 
-    const otp = Math.floor(1000 + Math.random() * 9000).toString();
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedOtp = crypto.createHash('sha256').update(otp).digest('hex');
     await User.updateOne(
       { _id: user._id },
-      { $set: { otpCode: otp, otpExpires: Date.now() + 5 * 60 * 1000 } }
+      { $set: { otpCode: hashedOtp, otpExpires: Date.now() + 5 * 60 * 1000 } }
     );
 
     // Send email (fail gracefully if mailer fails but still return error)
@@ -103,8 +105,12 @@ export const verifyOtp = async (req, res) => {
     const user = await User.findOne({ email: email.toLowerCase() }).select('+otpCode +otpExpires +refreshTokens');
     
     if (!user) return sendUnauthorized(res, 'User not found');
-    if (!user.otpCode || user.otpCode !== otp) return sendUnauthorized(res, 'Invalid OTP');
     if (user.otpExpires < Date.now()) return sendUnauthorized(res, 'OTP expired');
+
+    const hashedInput = crypto.createHash('sha256').update(otp).digest('hex');
+    if (!user.otpCode || !crypto.timingSafeEqual(Buffer.from(hashedInput), Buffer.from(user.otpCode))) {
+      return sendUnauthorized(res, 'Invalid OTP');
+    }
     // Clear OTP and mark email as verified
     await User.updateOne(
       { _id: user._id },
@@ -193,6 +199,76 @@ export const logoutAll = async (req, res) => {
   }
 };
 
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      return sendSuccess(res, {}, 'If that email is registered, a reset link has been sent');
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $set: {
+          passwordResetToken: hashedToken,
+          passwordResetExpires: Date.now() + 60 * 60 * 1000,
+        },
+      }
+    );
+
+    try {
+      await sendPasswordResetEmail(user.email, resetToken);
+      logger.info(`Password reset token generated for ${user.email}`);
+    } catch (mailErr) {
+      await User.updateOne(
+        { _id: user._id },
+        { $unset: { passwordResetToken: 1, passwordResetExpires: 1 } }
+      );
+      return sendError(res, 'Failed to send reset email. Please try again later.');
+    }
+
+    return sendSuccess(res, {}, 'If that email is registered, a reset link has been sent');
+  } catch (err) {
+    logger.error(`forgotPassword: ${err.message}`);
+    return sendError(res, err.message);
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await User.findOne({
+      passwordResetToken: hashedToken,
+      passwordResetExpires: { $gt: Date.now() },
+    }).select('+passwordResetToken +passwordResetExpires');
+
+    if (!user) {
+      return sendError(res, 'Invalid or expired reset token');
+    }
+
+    user.password = password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    user.passwordChangedAt = new Date();
+    await user.save();
+
+    logger.info(`Password reset successful for ${user.email}`);
+
+    return sendSuccess(res, {}, 'Password has been reset successfully');
+  } catch (err) {
+    logger.error(`resetPassword: ${err.message}`);
+    return sendError(res, err.message);
+  }
+};
 
 export const getMe = async (req, res) => {
   try {

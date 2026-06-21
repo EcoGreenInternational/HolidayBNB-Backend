@@ -11,7 +11,12 @@ import userRoutes from './routes/userRoutes.js';
 import propertyRoutes from './routes/propertyRoutes.js';
 import adminUserRoutes from './routes/adminUserRoutes.js';
 import adminPropertyRoutes from './routes/adminPropertyRoutes.js';
+import adminDashboardRoutes from './routes/adminDashboardRoutes.js';
+import adminBookingRoutes from './routes/adminBookingRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import reviewRoutes from './routes/reviewRoutes.js';
+import bookingRoutes from './routes/bookingRoutes.js';
+import { stripeWebhook } from './controllers/bookingController.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 import logger from './utils/logger.js';
 
@@ -23,13 +28,15 @@ const app = express();
 app.use(helmet());
 
 app.use(cors({
-  origin:      process.env.CLIENT_URL || 'http://localhost:5173',
+  origin:      process.env.CLIENT_URL,
   credentials: true,
   methods:     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
 }));
 
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true }));
+app.post('/api/bookings/webhook', express.raw({ type: 'application/json' }), stripeWebhook);
+
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 if (process.env.NODE_ENV !== 'test') {
@@ -60,7 +67,6 @@ app.get('/api/health', (req, res) => {
   res.json({
     success: true,
     message: 'HollyBnB API is running',
-    env:     process.env.NODE_ENV,
     time:    new Date().toISOString(),
   });
 });
@@ -68,9 +74,13 @@ app.get('/api/health', (req, res) => {
 app.use('/api/auth',  authLimiter, authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/properties',  propertyRoutes);
+app.use('/api/reviews', reviewRoutes);
 app.use('/api/admin/users', adminUserRoutes);
 app.use('/api/admin/properties', adminPropertyRoutes);
+app.use('/api/admin/dashboard', adminDashboardRoutes);
+app.use('/api/admin/bookings', adminBookingRoutes);
 app.use('/api/admin/upload', uploadRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

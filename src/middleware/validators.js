@@ -109,7 +109,9 @@ export const adminCreateUserRules = [
 
   body('password')
     .notEmpty().withMessage('Password is required')
-    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
+    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
+    .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter')
+    .matches(/[0-9]/).withMessage('Password must contain at least one number'),
 
   body('role')
     .optional()
@@ -177,6 +179,43 @@ export const adminUpdateUserRules = [
   body('photo')
     .optional({ nullable: true })
     .trim(),
+];
+
+// ─── OTP verification ───────────────────────────────────────────────────────
+
+export const verifyOtpRules = [
+  body('email')
+    .trim()
+    .notEmpty().withMessage('Email is required')
+    .isEmail().withMessage('Please enter a valid email')
+    .normalizeEmail(),
+
+  body('otp')
+    .notEmpty().withMessage('OTP is required')
+    .isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits')
+    .isNumeric().withMessage('OTP must be numeric'),
+];
+
+// ─── Password reset ──────────────────────────────────────────────────────────
+
+export const forgotPasswordRules = [
+  body('email')
+    .trim()
+    .notEmpty().withMessage('Email is required')
+    .isEmail().withMessage('Please enter a valid email')
+    .normalizeEmail(),
+];
+
+export const resetPasswordRules = [
+  body('token')
+    .trim()
+    .notEmpty().withMessage('Reset token is required'),
+
+  body('password')
+    .notEmpty().withMessage('Password is required')
+    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
+    .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter')
+    .matches(/[0-9]/).withMessage('Password must contain at least one number'),
 ];
 
 // ─── Shared param rules ───────────────────────────────────────────────────────

@@ -19,8 +19,8 @@ export const listProperties = async (req, res) => {
 
     const [properties, total] = await Promise.all([
       Property.find(filter)
-        .populate('owner', 'name email')
-        .populate('host', 'name email')
+        .populate('owner', 'name')
+        .populate('host', 'name')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
@@ -58,7 +58,20 @@ export const getProperty = async (req, res) => {
 
 export const createProperty = async (req, res) => {
   try {
-    const body = { ...req.body };
+    const ALLOWED = [
+      'name','propertyType','roomType','status','description',
+      'maxAdults','maxChildren',
+      'country','city','address','mapLink','landmarks',
+      'bedrooms','beds','bathrooms','floorArea','minNights','maxNights',
+      'amenities','accessibility','nearby','rules','experience','uniqueExperiences','safety',
+      'price','cleaningFee','weeklyDiscount','monthlyDiscount','availability','instantBooking',
+      'images','owner','host',
+    ];
+
+    const body = {};
+    ALLOWED.forEach(field => {
+      if (req.body[field] !== undefined) body[field] = req.body[field];
+    });
 
     if (body.owner === '' || body.owner === 'null' || body.owner === 'undefined') {
       delete body.owner;
@@ -91,7 +104,7 @@ export const updateProperty = async (req, res) => {
 
     const ALLOWED = [
       'name','propertyType','roomType','status','description',
-      'maxAdults','maxChildren','maxInfants',
+      'maxAdults','maxChildren',
       'country','city','address','mapLink','landmarks',
       'bedrooms','beds','bathrooms','floorArea','minNights','maxNights',
       'amenities','accessibility','nearby','rules','experience','uniqueExperiences','safety',
