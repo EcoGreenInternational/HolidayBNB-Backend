@@ -13,6 +13,7 @@ import adminUserRoutes from './routes/adminUserRoutes.js';
 import adminPropertyRoutes from './routes/adminPropertyRoutes.js';
 import adminDashboardRoutes from './routes/adminDashboardRoutes.js';
 import adminBookingRoutes from './routes/adminBookingRoutes.js';
+import adminReviewRoutes from './routes/adminReviewRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
@@ -79,6 +80,7 @@ app.use('/api/admin/users', adminUserRoutes);
 app.use('/api/admin/properties', adminPropertyRoutes);
 app.use('/api/admin/dashboard', adminDashboardRoutes);
 app.use('/api/admin/bookings', adminBookingRoutes);
+app.use('/api/admin/reviews', adminReviewRoutes);
 app.use('/api/admin/upload', uploadRoutes);
 app.use('/api/bookings', bookingRoutes);
 
