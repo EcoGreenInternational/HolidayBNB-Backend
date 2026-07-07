@@ -1,4 +1,5 @@
 import Booking from '../models/Booking.js';
+import Payout from '../models/Payout.js';
 import Property from '../models/Property.js';
 import Review from '../models/Review.js';
 import { sendSuccess, sendError } from '../utils/apiResponse.js';
@@ -39,6 +40,12 @@ export const getDashboardStats = async (req, res) => {
     ]);
 
     const totalRevenue = revenueResult.length > 0 ? revenueResult[0].total : 0;
+
+    const commissionResult = await Booking.aggregate([
+      { $match: { ...filter, status: 'confirmed' } },
+      { $group: { _id: null, total: { $sum: '$commissionAmount' } } },
+    ]);
+    const commissionEarned = commissionResult.length > 0 ? commissionResult[0].total : 0;
 
     const monthlyRevenue = await Booking.aggregate([
       {
@@ -98,7 +105,9 @@ export const getDashboardStats = async (req, res) => {
 
     const reviewFilter = filter.property ? { property: filter.property } : {};
 
-    const [totalReviews, approvedReviews, reviewStats] = await Promise.all([
+    const [pendingPayouts, failedRefunds, totalReviews, approvedReviews, reviewStats] = await Promise.all([
+      Payout.countDocuments({ status: { $in: ['pending', 'scheduled'] } }),
+      Booking.countDocuments({ refundStatus: 'failed' }),
       Review.countDocuments(reviewFilter),
       Review.countDocuments({ ...reviewFilter, status: 'approved' }),
       Review.aggregate([
@@ -119,6 +128,7 @@ export const getDashboardStats = async (req, res) => {
     return sendSuccess(res, {
       stats: {
         totalRevenue,
+        commissionEarned,
         confirmedBookings,
         totalBookings,
         totalGuests,
@@ -128,6 +138,8 @@ export const getDashboardStats = async (req, res) => {
         totalReviews,
         approvedReviews,
         reviewAvg,
+        pendingPayouts,
+        failedRefunds,
       },
       monthly,
       recentBookings,
