@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
+import { encryptBankDetails, decryptBankDetails } from '../utils/encrypt.js';
 
 const { Schema, model } = mongoose;
 
@@ -70,6 +71,15 @@ const UserSchema = new Schema(
     verificationId: { type: String, trim: true, default: '' },
     notes:          { type: String, trim: true, default: '' },
 
+    bankDetails: {
+      bankName:        { type: String, trim: true, default: '' },
+      accountHolder:   { type: String, trim: true, default: '' },
+      accountNumber:   { type: String, trim: true, default: '' },
+      routingNumber:   { type: String, trim: true, default: '' },
+      swiftCode:       { type: String, trim: true, default: '' },
+      currency:        { type: String, default: 'USD' },
+    },
+
   
     interests: {
       type:    [String],
@@ -110,6 +120,17 @@ UserSchema.virtual('isLocked').get(function () {
   return !!(this.lockUntil && this.lockUntil > Date.now());
 });
 
+
+UserSchema.pre('save', async function (next) {
+  if (this.isModified('bankDetails') && this.bankDetails) {
+    const d = this.bankDetails.toObject ? this.bankDetails.toObject() : this.bankDetails;
+    const isEncrypted = d.accountNumber && d.accountNumber.includes(':');
+    if (!isEncrypted) {
+      this.bankDetails = encryptBankDetails(d);
+    }
+  }
+  next();
+});
 
 UserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
@@ -176,6 +197,9 @@ UserSchema.methods.toSafeObject = function () {
     'passwordChangedAt','__v',
   ];
   sensitiveFields.forEach(f => delete obj[f]);
+  if (obj.bankDetails) {
+    obj.bankDetails = decryptBankDetails(obj.bankDetails);
+  }
   obj.dateCreated = obj.createdAt
     ? new Date(obj.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
     : '';

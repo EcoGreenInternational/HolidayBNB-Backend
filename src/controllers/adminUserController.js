@@ -90,7 +90,7 @@ export const listUsers = async (req, res) => {
 // ─── POST /api/admin/users ─────────────────────────────────────────────────────
 export const createUser = async (req, res) => {
   try {
-    const { name, email, username, password, phone, role, specialization, verificationId, notes, photo } = req.body;
+    const { name, email, username, password, phone, role, specialization, verificationId, notes, photo, bankDetails } = req.body;
 
     const targetRole = role || 'Host';
     if (targetRole === 'Admin') {
@@ -121,6 +121,7 @@ export const createUser = async (req, res) => {
       verificationId: verificationId || '',
       notes: notes || '',
       photo: photo || null,
+      bankDetails: bankDetails || {},
     });
 
     return sendCreated(res, { user: user.toSafeObject() }, 'User created successfully');
@@ -148,7 +149,7 @@ export const getUser = async (req, res) => {
 // ─── PUT /api/admin/users/:id ─────────────────────────────────────────────────
 export const updateUser = async (req, res) => {
   try {
-    const ALLOWED = ['name', 'email', 'phone', 'role', 'specialization', 'verificationId', 'notes', 'photo', 'password'];
+    const ALLOWED = ['name', 'email', 'phone', 'role', 'specialization', 'verificationId', 'notes', 'photo', 'password', 'bankDetails'];
     const updates = {};
     ALLOWED.forEach(field => {
       if (req.body[field] !== undefined) updates[field] = req.body[field];

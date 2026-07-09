@@ -1,0 +1,71 @@
+19:48:25 [[32minfo[39m]: MongoDB connected: localhost
+19:48:25 [[32minfo[39m]: Server running on http://localhost:5000 [development]
+19:48:53 [[32mhttp[39m]: [0mGET /api/admin/cancellation [33m401[0m 3.714 ms - 54[0m
+20:11:00 [[33mwarn[39m]: MongoDB disconnected, retrying...
+20:11:10 [[32minfo[39m]: MongoDB reconnected
+20:12:35 [[32mhttp[39m]: [0mGET /api/properties [36m304[0m 464.312 ms - -[0m
+20:13:00 [[32minfo[39m]: User logged in: admin@holidaybnb.com
+20:13:00 [[32mhttp[39m]: [0mPOST /api/auth/login [32m200[0m 1868.623 ms - 947[0m
+20:13:00 [[31merror[39m]: login: No matching document found for id "6a1f284d469b106a7c5e2570" version 69 modifiedPaths "refreshTokens, bankDetails.bankName, bankDetails.accountHolder, bankDetails.accountNumber, bankDetails.routingNumber, bankDetails.swiftCode, bankDetails.currency"
+20:13:00 [[32mhttp[39m]: [0mPOST /api/auth/login [31m500[0m 1555.473 ms - 283[0m
+20:13:00 [[32mhttp[39m]: [0mGET /api/admin/users?limit=100 [32m200[0m 111.041 ms - 3181[0m
+20:13:00 [[32mhttp[39m]: [0mGET /api/admin/dashboard [36m304[0m 194.542 ms - -[0m
+20:13:05 [[32mhttp[39m]: [0mGET /api/admin/properties/owners [32m200[0m 27.534 ms - 141[0m
+20:13:05 [[32mhttp[39m]: [0mGET /api/admin/properties/hosts [32m200[0m 25.216 ms - 56[0m
+20:13:05 [[32mhttp[39m]: [0mGET /api/admin/properties [32m200[0m 38.311 ms - 4515[0m
+20:13:07 [[32mhttp[39m]: [0mGET /api/admin/bookings [36m304[0m 15.357 ms - -[0m
+20:13:11 [[32mhttp[39m]: [0mGET /api/admin/commission [32m200[0m 13.216 ms - 249[0m
+20:13:11 [[32mhttp[39m]: [0mGET /api/admin/cancellation [32m200[0m 32.109 ms - 413[0m
+20:13:23 [[32mhttp[39m]: [0mGET /api/admin/users/stats [32m200[0m 14.958 ms - 118[0m
+20:13:27 [[32mhttp[39m]: [0mGET /api/auth/me [32m200[0m 13.322 ms - 669[0m
+20:13:27 [[32mhttp[39m]: [0mGET /api/admin/users?limit=100 [36m304[0m 18.938 ms - -[0m
+20:13:27 [[32mhttp[39m]: [0mGET /api/admin/dashboard [36m304[0m 67.613 ms - -[0m
+20:13:32 [[32mhttp[39m]: [0mGET /api/admin/bookings [36m304[0m 15.201 ms - -[0m
+20:13:34 [[32mhttp[39m]: [0mGET /api/admin/bookings [36m304[0m 13.567 ms - -[0m
+20:13:39 [[32mhttp[39m]: [0mGET /api/admin/commission [36m304[0m 14.708 ms - -[0m
+20:13:39 [[32mhttp[39m]: [0mGET /api/admin/cancellation [32m200[0m 12.601 ms - 413[0m
+20:14:44 [[32mhttp[39m]: [0mGET /api/admin/users/stats [36m304[0m 12.234 ms - -[0m
+20:14:47 [[32mhttp[39m]: [0mGET /api/admin/bookings [36m304[0m 16.201 ms - -[0m
+20:14:52 [[32mhttp[39m]: [0mGET /api/admin/users/stats [36m304[0m 9.379 ms - -[0m
+20:15:35 [[32mhttp[39m]: [0mPOST /api/admin/users [33m400[0m 24.110 ms - 215[0m
+20:15:48 [[32mhttp[39m]: [0mPOST /api/admin/users [33m400[0m 14.398 ms - 215[0m
+20:16:25 [[32mhttp[39m]: [0mGET /api/properties [36m304[0m 8.156 ms - -[0m
+20:16:25 [[32mhttp[39m]: [0mGET /api/auth/me [36m304[0m 17.446 ms - -[0m
+20:16:37 [[32mhttp[39m]: [0mPOST /api/auth/logout [32m200[0m 15.799 ms - 49[0m
+20:16:37 [[32mhttp[39m]: [0mGET /api/properties [36m304[0m 4.987 ms - -[0m
+20:16:46 [[32minfo[39m]: User logged in: dewaka@gmail.com
+20:16:46 [[32mhttp[39m]: [0mPOST /api/auth/login [32m200[0m 420.613 ms - 959[0m
+20:16:47 [[32mhttp[39m]: [0mGET /api/admin/users?limit=100 [33m403[0m 14.931 ms - 64[0m
+20:16:47 [[32mhttp[39m]: [0mGET /api/admin/dashboard [36m304[0m 110.631 ms - -[0m
+20:17:01 [[32mhttp[39m]: [0mGET /api/admin/bookings [36m304[0m 21.987 ms - -[0m
+20:17:02 [[32mhttp[39m]: [0mGET /api/admin/properties/hosts [36m304[0m 19.986 ms - -[0m
+20:17:02 [[32mhttp[39m]: [0mGET /api/admin/properties [36m304[0m 28.656 ms - -[0m
+20:17:03 [[32mhttp[39m]: [0mGET /api/admin/bookings [36m304[0m 18.278 ms - -[0m
+20:17:07 [[32mhttp[39m]: [0mGET /api/admin/bookings [36m304[0m 19.415 ms - -[0m
+20:17:08 [[32mhttp[39m]: [0mGET /api/admin/properties/hosts [36m304[0m 12.057 ms - -[0m
+20:17:08 [[32mhttp[39m]: [0mGET /api/admin/properties [36m304[0m 19.257 ms - -[0m
+20:17:08 [[32mhttp[39m]: [0mGET /api/admin/bookings [36m304[0m 25.229 ms - -[0m
+20:17:14 [[32mhttp[39m]: [0mGET /api/properties [36m304[0m 9.226 ms - -[0m
+20:17:14 [[32mhttp[39m]: [0mGET /api/auth/me [32m200[0m 11.172 ms - 681[0m
+20:17:41 [[32mhttp[39m]: [0mPOST /api/auth/logout [32m200[0m 19.689 ms - 49[0m
+20:17:41 [[32mhttp[39m]: [0mGET /api/properties [36m304[0m 5.902 ms - -[0m
+20:17:53 [[32minfo[39m]: User logged in: admin@holidaybnb.com
+20:17:53 [[32mhttp[39m]: [0mPOST /api/auth/login [32m200[0m 390.901 ms - 947[0m
+20:17:53 [[32mhttp[39m]: [0mGET /api/admin/users?limit=100 [32m200[0m 19.363 ms - 3300[0m
+20:17:53 [[32mhttp[39m]: [0mGET /api/admin/dashboard [36m304[0m 51.712 ms - -[0m
+20:17:55 [[32mhttp[39m]: [0mGET /api/admin/users/stats [36m304[0m 13.177 ms - -[0m
+20:18:50 [[32mhttp[39m]: [0mGET /api/admin/commission [36m304[0m 21.046 ms - -[0m
+20:18:50 [[32mhttp[39m]: [0mGET /api/admin/cancellation [36m304[0m 13.498 ms - -[0m
+20:18:55 [[32mhttp[39m]: [0mGET /api/admin/bookings [36m304[0m 11.364 ms - -[0m
+20:18:57 [[32mhttp[39m]: [0mGET /api/admin/bookings [36m304[0m 31.034 ms - -[0m
+20:18:58 [[32mhttp[39m]: [0mGET /api/admin/reviews?page=1&limit=20 [32m200[0m 18.078 ms - 1196[0m
+20:26:23 [[32mhttp[39m]: [0mGET /api/properties [36m304[0m 63.883 ms - -[0m
+20:26:23 [[32mhttp[39m]: [0mGET /api/auth/me [32m200[0m 73.735 ms - 669[0m
+21:06:01 [[32mhttp[39m]: [0mGET /api/admin/users?limit=100 [36m304[0m 1157.344 ms - -[0m
+21:06:03 [[32mhttp[39m]: [0mGET /api/admin/dashboard [36m304[0m 2648.058 ms - -[0m
+21:06:07 [[32mhttp[39m]: [0mGET /api/admin/cancellation [36m304[0m 56.679 ms - -[0m
+21:06:07 [[32mhttp[39m]: [0mGET /api/admin/commission [36m304[0m 78.576 ms - -[0m
+09:08:15 [[33mwarn[39m]: MongoDB disconnected, retrying...
+09:08:25 [[32minfo[39m]: MongoDB reconnected
+09:08:29 [[34mdebug[39m]: Access token verify failed: jwt expired
+09:08:29 [[32mhttp[39m]: [0mGET /api/auth/me [33m401[0m 217.931 ms - 61[0m

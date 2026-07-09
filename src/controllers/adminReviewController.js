@@ -1,6 +1,5 @@
 import Review from '../models/Review.js';
-import Property from '../models/Property.js';
-import { sendSuccess, sendCreated, sendError, sendNotFound } from '../utils/apiResponse.js';
+import { sendSuccess, sendError, sendNotFound } from '../utils/apiResponse.js';
 import logger from '../utils/logger.js';
 
 export const listReviews = async (req, res) => {

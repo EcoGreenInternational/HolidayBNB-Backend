@@ -18,6 +18,19 @@ const BookingSchema = new Schema(
     stripeSessionId: { type: String, default: '' },
     invoiceNumber:   { type: String, default: '' },
     paidAt:          { type: Date },
+    source:          { type: String, enum: ['direct', 'wishlist'], default: 'direct' },
+    commissionRate:  { type: Number, default: 0 },
+    commissionAmount:{ type: Number, default: 0 },
+
+    refundAmount:    { type: Number, default: 0 },
+    refundStatus:    { type: String, enum: ['none', 'pending', 'processed', 'failed'], default: 'none' },
+    platformRefundFee: { type: Number, default: 0 },
+    ownerRefundFee:    { type: Number, default: 0 },
+    refundedAt:      { type: Date },
+    refundRetryCount:{ type: Number, default: 0 },
+    refundLastError: { type: String, default: '' },
+
+    payoutGenerated:{ type: Boolean, default: false },
   },
   { timestamps: true }
 );

@@ -2,12 +2,14 @@ import 'dotenv/config';
 import app from './app.js';
 import connectDB from './config/db.js';
 import logger from './utils/logger.js';
+import { startScheduler } from './services/scheduler.js';
 
 const PORT = process.env.PORT || 5000;
 
 
 const startServer = async () => {
   await connectDB();
+  startScheduler();
 
   const server = app.listen(PORT, () => {
     logger.info(`Server running on http://localhost:${PORT} [${process.env.NODE_ENV}]`);

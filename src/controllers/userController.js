@@ -21,7 +21,7 @@ export const getProfile = async (req, res) => {
 // ─── PATCH /api/users/profile ─────────────────────────────────────────────────
 export const updateProfile = async (req, res) => {
   try {
-    const ALLOWED = ['name', 'phone', 'bio', 'favoriteDestination', 'interests', 'preferences'];
+    const ALLOWED = ['name', 'phone', 'bio', 'favoriteDestination', 'interests', 'preferences', 'bankDetails'];
     const updates = {};
     ALLOWED.forEach(field => {
       if (req.body[field] !== undefined) updates[field] = req.body[field];
