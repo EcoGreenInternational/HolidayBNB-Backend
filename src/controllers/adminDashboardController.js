@@ -1,5 +1,6 @@
 import Booking from '../models/Booking.js';
 import Property from '../models/Property.js';
+import Review from '../models/Review.js';
 import { sendSuccess, sendError } from '../utils/apiResponse.js';
 import logger from '../utils/logger.js';
 
@@ -95,6 +96,26 @@ export const getDashboardStats = async (req, res) => {
     ]);
     const totalGuests = totalGuestsAgg.length > 0 ? totalGuestsAgg[0].total : 0;
 
+    const reviewFilter = filter.property ? { property: filter.property } : {};
+
+    const [totalReviews, approvedReviews, reviewStats] = await Promise.all([
+      Review.countDocuments(reviewFilter),
+      Review.countDocuments({ ...reviewFilter, status: 'approved' }),
+      Review.aggregate([
+        { $match: reviewFilter },
+        { $group: { _id: null, avg: { $avg: '$rating' } } },
+      ]),
+    ]);
+
+    const reviewAvg = reviewStats.length > 0 ? Math.round(reviewStats[0].avg * 10) / 10 : 0;
+
+    const recentReviews = await Review.find(reviewFilter)
+      .populate('user', 'name')
+      .populate('property', 'name')
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .lean();
+
     return sendSuccess(res, {
       stats: {
         totalRevenue,
@@ -104,10 +125,14 @@ export const getDashboardStats = async (req, res) => {
         totalProperties,
         pendingBookings,
         cancelledBookings,
+        totalReviews,
+        approvedReviews,
+        reviewAvg,
       },
       monthly,
       recentBookings,
       topStays,
+      recentReviews,
     });
   } catch (err) {
     logger.error(`getDashboardStats: ${err.message}`);
