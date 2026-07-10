@@ -105,11 +105,12 @@ export const getDashboardStats = async (req, res) => {
 
     const reviewFilter = filter.property ? { property: filter.property } : {};
 
-    const [pendingPayouts, failedRefunds, totalReviews, approvedReviews, reviewStats] = await Promise.all([
+    const [pendingPayouts, failedRefunds, totalReviews, approvedReviews, pendingProperties, reviewStats] = await Promise.all([
       Payout.countDocuments({ status: { $in: ['pending', 'scheduled'] } }),
       Booking.countDocuments({ refundStatus: 'failed' }),
       Review.countDocuments(reviewFilter),
       Review.countDocuments({ ...reviewFilter, status: 'approved' }),
+      Property.countDocuments(filter.property ? { _id: { $in: filter.property.$in }, status: 'Pending' } : { status: 'Pending' }),
       Review.aggregate([
         { $match: reviewFilter },
         { $group: { _id: null, avg: { $avg: '$rating' } } },
@@ -140,6 +141,7 @@ export const getDashboardStats = async (req, res) => {
         reviewAvg,
         pendingPayouts,
         failedRefunds,
+        pendingProperties,
       },
       monthly,
       recentBookings,

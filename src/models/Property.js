@@ -7,7 +7,7 @@ const PropertySchema = new Schema(
     name:            { type: String, required: true, trim: true },
     propertyType:    { type: String, enum: ['Villa','Bungalow','Apartment','Resort','Guest House','Boutique Villa','Beach House','Tree House','Heritage Bungalow','Home Stay','Penthouse','Studio','House','Condo'], default: 'Villa' },
     roomType:        { type: String, enum: ['Private Room','Shared Room','Entire Place','Studio','Suite'], default: 'Entire Place' },
-    status:          { type: String, enum: ['Active','Inactive','Pending'], default: 'Active' },
+    status:          { type: String, enum: ['Active','Inactive','Pending'], default: 'Pending' },
     description:     { type: String, trim: true, default: '' },
     maxAdults:       { type: Number, default: 1 },
     maxChildren:     { type: Number, default: 0 },

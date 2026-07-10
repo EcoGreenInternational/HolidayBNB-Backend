@@ -73,6 +73,12 @@ export const createProperty = async (req, res) => {
       if (req.body[field] !== undefined) body[field] = req.body[field];
     });
 
+    if (req.user.role === 'Admin' || req.user.role === 'Staff') {
+      if (body.status === undefined) body.status = 'Active';
+    } else {
+      body.status = 'Pending';
+    }
+
     if (body.owner === '' || body.owner === 'null' || body.owner === 'undefined') {
       delete body.owner;
     }
@@ -152,10 +158,14 @@ export const togglePropertyStatus = async (req, res) => {
       return sendForbidden(res, 'You can only manage your own properties');
     }
 
-    property.status = property.status === 'Active' ? 'Inactive' : 'Active';
+    if (req.body.status && ['Active', 'Inactive', 'Pending'].includes(req.body.status)) {
+      property.status = req.body.status;
+    } else {
+      property.status = property.status === 'Active' ? 'Inactive' : 'Active';
+    }
     await property.save();
 
-    return sendSuccess(res, { property }, `Property ${property.status === 'Active' ? 'activated' : 'deactivated'} successfully`);
+    return sendSuccess(res, { property }, `Property ${property.status === 'Active' ? 'activated' : property.status === 'Pending' ? 'set to pending' : 'deactivated'} successfully`);
   } catch (err) {
     logger.error(`togglePropertyStatus: ${err.message}`);
     return sendError(res, err.message);
