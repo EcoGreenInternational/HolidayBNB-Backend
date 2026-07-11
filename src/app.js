@@ -20,6 +20,7 @@ import payoutRoutes from './routes/payoutRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
+import hostRoutes from './routes/hostRoutes.js';
 import { stripeWebhook } from './controllers/bookingController.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
 import logger from './utils/logger.js';
@@ -89,6 +90,7 @@ app.use('/api/admin/cancellation', cancellationRoutes);
 app.use('/api/admin/payouts', payoutRoutes);
 app.use('/api/admin/upload', uploadRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/host', hostRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
