@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import Payout from '../models/Payout.js';
 import Booking from '../models/Booking.js';
+import Property from '../models/Property.js';
 import CancellationPolicy from '../models/CancellationPolicy.js';
 import { sendSuccess, sendError } from '../utils/apiResponse.js';
 import logger from '../utils/logger.js';
@@ -20,7 +21,7 @@ export const getPayouts = async (req, res) => {
       Payout.find(filter)
         .populate('booking', 'checkIn checkOut totalAmount invoiceNumber')
         .populate('owner', 'name email bankDetails')
-        .populate('property', 'title')
+        .populate('property', 'name city country')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(parseInt(limit))
@@ -46,7 +47,7 @@ export const generatePayouts = async (req, res) => {
         { payoutGenerated: { $ne: true } },
         { payoutGenerated: { $exists: false } },
       ],
-    }).populate('property').lean();
+    }).lean();
 
     const cancelledWithOwnerFee = await Booking.find({
       status: 'cancelled',
@@ -55,7 +56,7 @@ export const generatePayouts = async (req, res) => {
         { payoutGenerated: { $ne: true } },
         { payoutGenerated: { $exists: false } },
       ],
-    }).populate('property').lean();
+    }).lean();
 
     const allBookings = [...completedBookings, ...cancelledWithOwnerFee];
     let generated = 0;
@@ -82,10 +83,13 @@ export const generatePayouts = async (req, res) => {
         ownerAmount = booking.totalAmount - commissionAmount;
       }
 
+      const property = await Property.findById(booking.property).populate('owner', '_id name email').lean();
+      const ownerId = property?.owner?._id || property?.owner || null;
+
       await Payout.create({
         booking: booking._id,
-        owner: booking.property?.owner || booking.user,
-        property: booking.property?._id || booking.property,
+        owner: ownerId,
+        property: booking.property,
         totalAmount: booking.totalAmount,
         commissionAmount,
         ownerAmount: ownerAmount > 0 ? ownerAmount : 0,

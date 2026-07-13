@@ -23,6 +23,7 @@ router.post('/',      createProperty);
 router.get('/:id',    getProperty);
 router.put('/:id',    updateProperty);
 router.delete('/:id', deleteProperty);
-router.patch('/:id/status', togglePropertyStatus);
+
+router.patch('/:id/status', protect, restrictTo('Admin', 'Staff'), togglePropertyStatus);
 
 export default router;

@@ -4,7 +4,7 @@ import { sendSuccess, sendCreated, sendError, sendBadRequest } from '../utils/ap
 
 export const getProperties = async (req, res) => {
   try {
-    const properties = await Property.find();
+    const properties = await Property.find({ status: 'Active' });
     return res.status(200).json(properties);
   } catch (error) {
     return sendError(res, 'Failed to fetch properties');
@@ -15,7 +15,7 @@ export const getProperties = async (req, res) => {
 export const getPropertyById = async (req, res) => {
   try {
     const property = await Property.findById(req.params.id);
-    if (!property) {
+    if (!property || property.status !== 'Active') {
       return sendError(res, 'Property not found', 404);
     }
     return res.status(200).json(property);
