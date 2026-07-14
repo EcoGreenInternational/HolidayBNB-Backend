@@ -153,7 +153,7 @@ export const createCheckoutSession = async (req, res) => {
       commissionAmount,
     });
 
-    const frontendUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+    const frontendUrl = req.body.clientUrl || process.env.CLIENT_URL || 'http://localhost:5173';
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -601,7 +601,7 @@ export const retryPayment = async (req, res) => {
 
     const property = booking.property;
     const nights = Math.round((new Date(booking.checkOut) - new Date(booking.checkIn)) / (1000 * 60 * 60 * 24));
-    const frontendUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+    const frontendUrl = req.body.clientUrl || process.env.CLIENT_URL || 'http://localhost:5173';
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
