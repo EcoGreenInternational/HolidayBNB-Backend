@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
 import {
   register,
   login,
@@ -16,9 +17,16 @@ import { registerRules, loginRules, forgotPasswordRules, resetPasswordRules, ver
 
 const router = Router();
 
+const otpLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { success: false, message: 'Too many OTP attempts. Try again in 15 minutes.' },
+  keyGenerator: (req) => req.body?.email || req.ip,
+});
+
 router.post('/register', registerRules, validate, register);
 router.post('/login',    loginRules,    validate, login);
-router.post('/verify-otp', verifyOtpRules, validate, verifyOtp);
+router.post('/verify-otp', otpLimiter, verifyOtpRules, validate, verifyOtp);
 router.post('/refresh',                           refreshToken);
 router.post('/logout',                            logout);
 router.post('/forgot-password', forgotPasswordRules, validate, forgotPassword);
