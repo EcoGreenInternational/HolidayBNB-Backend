@@ -23,10 +23,31 @@ export const register = async (req, res) => {
     const { name, username, email, password } = req.body;
 
     
-    const existing = await User.findOne({ $or: [{ email }, { username }] }).lean();
+    const existing = await User.findOne({ $or: [{ email }, { username }] });
+
     if (existing) {
-      const field = existing.email === email ? 'Email' : 'Username';
-      return sendConflict(res, `${field} is already registered`);
+      // If email is verified, this is a true duplicate
+      if (existing.isEmailVerified) {
+        const field = existing.email === email ? 'Email' : 'Username';
+        return sendConflict(res, `${field} is already registered`);
+      }
+      // Unverified user — update credentials and resend OTP
+      existing.name = name;
+      existing.password = password;
+      if (existing.email !== email) existing.email = email;
+      if (existing.username !== username) existing.username = username;
+
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const hashedOtp = crypto.createHash('sha256').update(otp).digest('hex');
+      existing.otpCode = hashedOtp;
+      existing.otpExpires = Date.now() + 5 * 60 * 1000;
+
+      await existing.save();
+
+      await sendOTP(existing.email, otp);
+      logger.info(`OTP resent for unverified user: ${existing.email}`);
+
+      return sendSuccess(res, { otpRequired: true, email: existing.email }, 'OTP sent to email. Please verify to complete registration.');
     }
 
     const user = await User.create({ name, username, email, password });
@@ -38,7 +59,6 @@ export const register = async (req, res) => {
       { $set: { otpCode: hashedOtp, otpExpires: Date.now() + 5 * 60 * 1000 } }
     );
 
-    // Send email (fail gracefully if mailer fails but still return error)
     await sendOTP(user.email, otp);
 
     logger.info(`OTP generated for new user: ${user.email}`);
@@ -102,20 +122,29 @@ export const verifyOtp = async (req, res) => {
     const { email, otp } = req.body;
     if (!email) return sendError(res, 'Email is missing');
 
-    const user = await User.findOne({ email: email.toLowerCase() }).select('+otpCode +otpExpires +refreshTokens');
+    const user = await User.findOne({ email: email.toLowerCase() }).select(
+      '+otpCode +otpExpires +refreshTokens +otpAttempts +otpLockUntil'
+    );
     
     if (!user) return sendUnauthorized(res, 'User not found');
+
+    if (user.isOtpLocked) {
+      return sendUnauthorized(res, 'Too many OTP attempts. Try again in 30 minutes.');
+    }
+
     if (user.otpExpires < Date.now()) return sendUnauthorized(res, 'OTP expired');
 
     const hashedInput = crypto.createHash('sha256').update(otp).digest('hex');
     if (!user.otpCode || !crypto.timingSafeEqual(Buffer.from(hashedInput), Buffer.from(user.otpCode))) {
+      await user.incrementOtpAttempts();
       return sendUnauthorized(res, 'Invalid OTP');
     }
+
     // Clear OTP and mark email as verified
     await User.updateOne(
       { _id: user._id },
       { 
-        $unset: { otpCode: 1, otpExpires: 1 },
+        $unset: { otpCode: 1, otpExpires: 1, otpAttempts: 1, otpLockUntil: 1 },
         $set: { isEmailVerified: true }
       }
     );

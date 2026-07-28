@@ -106,6 +106,8 @@ const UserSchema = new Schema(
     lockUntil:            { type: Date,   select: false },
     otpCode:              { type: String, select: false },
     otpExpires:           { type: Date,   select: false },
+    otpAttempts:          { type: Number, default: 0, select: false },
+    otpLockUntil:         { type: Date,   select: false },
   },
   {
     timestamps: true,           
@@ -115,9 +117,15 @@ const UserSchema = new Schema(
 );
 
 UserSchema.index({ createdAt: -1 });
+UserSchema.index({ otpExpires: 1 }, { expireAfterSeconds: 0 });
+UserSchema.index({ passwordResetExpires: 1 }, { expireAfterSeconds: 0 });
 
 UserSchema.virtual('isLocked').get(function () {
   return !!(this.lockUntil && this.lockUntil > Date.now());
+});
+
+UserSchema.virtual('isOtpLocked').get(function () {
+  return !!(this.otpLockUntil && this.otpLockUntil > Date.now());
 });
 
 
@@ -189,12 +197,28 @@ UserSchema.methods.resetLoginAttempts = function () {
 };
 
 
+UserSchema.methods.incrementOtpAttempts = async function () {
+  if (this.otpLockUntil && this.otpLockUntil < Date.now()) {
+    return this.updateOne({ $set: { otpAttempts: 1 }, $unset: { otpLockUntil: 1 } });
+  }
+  const updates = { $inc: { otpAttempts: 1 } };
+  if ((this.otpAttempts || 0) + 1 >= 5 && !this.isOtpLocked) {
+    updates.$set = { otpLockUntil: Date.now() + 30 * 60 * 1000 };
+  }
+  return this.updateOne(updates);
+};
+
+UserSchema.methods.resetOtpAttempts = function () {
+  return this.updateOne({ $set: { otpAttempts: 0 }, $unset: { otpLockUntil: 1 } });
+};
+
 UserSchema.methods.toSafeObject = function () {
   const obj = this.toObject();
   const sensitiveFields = [
     'password','refreshTokens','passwordResetToken',
     'passwordResetExpires','loginAttempts','lockUntil',
-    'passwordChangedAt','__v',
+    'passwordChangedAt','otpCode','otpExpires',
+    'otpAttempts','otpLockUntil','__v',
   ];
   sensitiveFields.forEach(f => delete obj[f]);
   if (obj.bankDetails) {
